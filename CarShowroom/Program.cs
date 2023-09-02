@@ -10,6 +10,9 @@ namespace CarShowroom
     {
         public static void Main(string[] args)
         {
+            Car car = new Car();
+            CarList carList = new CarList();
+
         }
     }
 }
