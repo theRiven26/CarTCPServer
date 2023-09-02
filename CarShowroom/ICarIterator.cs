@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace CarShowroom
 {
-    public class Program
+    public interface ICarIterator
     {
-        public static void Main(string[] args)
-        {
-        }
+        bool HasNext();
+        Car Next();
     }
 }
