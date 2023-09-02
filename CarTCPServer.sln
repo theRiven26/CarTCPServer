@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarTCPServer", "CarTCPServe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarTCPClient", "CarTCPClient\CarTCPClient.csproj", "{008467FB-5619-4ABE-8FE5-AA215EE31F22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CarShowroom", "CarShowroom\CarShowroom.csproj", "{144DC61B-8974-4907-8E54-F1E23E79E524}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{008467FB-5619-4ABE-8FE5-AA215EE31F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{008467FB-5619-4ABE-8FE5-AA215EE31F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{008467FB-5619-4ABE-8FE5-AA215EE31F22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{144DC61B-8974-4907-8E54-F1E23E79E524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{144DC61B-8974-4907-8E54-F1E23E79E524}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{144DC61B-8974-4907-8E54-F1E23E79E524}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{144DC61B-8974-4907-8E54-F1E23E79E524}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
