@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.Xml;
 
 namespace CarTCPClient
 {
@@ -60,7 +61,16 @@ namespace CarTCPClient
                     dataSize = tcpSocket.Receive(buffer);
                 }
                 while (tcpSocket.Available > 0);
-                string answer = decodeData(buffer);
+                string answer = "";
+                if (buffer[0] == 0x02) 
+                {
+                    answer = decodeAndSaveData(buffer);
+                }
+                else
+                {
+                    answer = Encoding.UTF8.GetString(buffer,0,dataSize);
+                }
+                    
                 Console.WriteLine(answer);
                 tcpSocket.Shutdown(SocketShutdown.Both);
                 tcpSocket.Close();
@@ -68,53 +78,90 @@ namespace CarTCPClient
                 Console.ReadLine();
             }
         }
-        static string decodeData(byte[] data)
+        static string decodeAndSaveData(byte[] data)
         {
             StringBuilder sb = new StringBuilder();
             int index = 0;
             int count = 0;
+
+            XmlDocument xmlDoc = new XmlDocument();
+            XmlElement rootElement = xmlDoc.CreateElement("Cars");
+            XmlElement carElement = xmlDoc.CreateElement("Car");
+            XmlElement modelElement = xmlDoc.CreateElement("Model");
+            XmlElement yearElement = xmlDoc.CreateElement("Year");
+            XmlElement volumeElement = xmlDoc.CreateElement("EngineVolume");
+            XmlElement countDoorElement = xmlDoc.CreateElement("CountDoor");
+            xmlDoc.AppendChild(rootElement);
+
             while (index < data.Length)
             {
                 if (data[index] == 0x02)
                 {
-                    if(count > 1)
+                    if (count > 1)
                     {
                         sb.Append("\n");
+                        rootElement.AppendChild(carElement);
                     }
+                    carElement = xmlDoc.CreateElement("Car");
+                   
                     count = 1;
                     int countElement = BitConverter.ToUInt16(data, ++index);
                     index += 2;
+
                 }
                 else if (data[index] == 0x09)
                 {
+                    
                     int stringLenght = BitConverter.ToUInt16(data, ++index);
                     index += 2;
+                    string model = Encoding.ASCII.GetString(data, index, stringLenght);
 
                     sb.Append("Model: ");
-                    sb.Append(Encoding.ASCII.GetString(data, index, stringLenght));
+                    sb.Append(model);
                     sb.Append("; ");
                     index += stringLenght;
                     count++;
+
+                    modelElement = xmlDoc.CreateElement("Model");
+                    modelElement.InnerText = model;
+                    carElement.AppendChild(modelElement);
                 }
                 else if(data[index] == 0x12)
                 {
-                    if(count == 2)
+                    int val = BitConverter.ToUInt16(data, ++index);
+                    if (count == 2)
                     {
                         sb.Append("Year: ");
-                    }else if (count == 4)
+
+                        yearElement = xmlDoc.CreateElement("Year");
+                        yearElement.InnerText = val.ToString();
+                        carElement.AppendChild(yearElement);
+                    }
+                    else if (count == 4)
                     {
                         sb.Append("Count doors: ");
+
+                        countDoorElement = xmlDoc.CreateElement("countDoor");
+                        countDoorElement.InnerText = val.ToString();
+                        carElement.AppendChild(countDoorElement);
                     }
-                    sb.Append(BitConverter.ToUInt16(data, ++index));
+                    sb.Append(val.ToString());
                     sb.Append("; ");
                     index += 2;
                     count++;
                 }
                 else if (data[index] == 0x13)
                 {
-                    sb.Append("Engine value: ");
-                    sb.Append(BitConverter.ToDouble(data, ++index));
+
+                    double engineVolume = BitConverter.ToDouble(data, ++index);
+                    sb.Append("Engine volume: ");
+                    sb.Append(engineVolume.ToString());
                     sb.Append("; ");
+  
+                    volumeElement = xmlDoc.CreateElement("EngineVolume");
+                    volumeElement.InnerText = engineVolume.ToString();
+                    carElement.AppendChild(volumeElement);
+
                     index += 8;
                     count++;
                 }
@@ -123,6 +170,8 @@ namespace CarTCPClient
                     break;
                 }
             }
+            rootElement.AppendChild(carElement);
+            xmlDoc.Save(@"C:\cars.xml");
             return sb.ToString();
         }
     }

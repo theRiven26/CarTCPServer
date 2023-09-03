@@ -45,14 +45,13 @@ namespace CarTCPServer
                 }else if(answer > 20)
                 {
                     int numRecords = answer - 20;
-                    if(list.Count > numRecords)
+                    if(list.Count >= numRecords)
                     {
                         listener.Send(convertCarListToByte(numRecords, list));
                     }
                     else
                     {
-                        byte[] bt = new byte[256];
-                        listener.Send(Encoding.ASCII.GetBytes("Под этим номером машины не существует"));
+                        listener.Send(Encoding.UTF8.GetBytes("Под этим номером машины не существует"));
                     }
                 }
                 
