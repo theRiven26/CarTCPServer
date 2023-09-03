@@ -40,13 +40,11 @@ namespace CarTCPServer
                 }
                 while (listener.Available > 0);
                 string answer = data.ToString();
-                if (answer.Equals(1))
+                if (answer.Equals("1"))
                 {
                     listener.Send(ConvertCarListToByte(0, list));
                 }
                 
-
-                listener.Send(Encoding.UTF8.GetBytes("Успех"));
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
             }
@@ -60,47 +58,52 @@ namespace CarTCPServer
 
             if (numRecords == 0)
             {
-                foreach (Car car in list.list)
-                {
-                    data = CarToByte(car);
-                }
+                    data = CarToByte(list);
             }
             else
             {
-                data = CarToByte(list[numRecords]);
+                List<Car> listCar = new List<Car>();
+                listCar.Add(list[numRecords]);
+                CarList carList = new CarList(listCar);
+                data = CarToByte(carList);
             }
             return data;
         }
 
-        public static byte[] CarToByte(Car car)
+        public static byte[] CarToByte(CarList cars)
         {
-            byte[] data = new byte[256];
-            if (car.brand != null)
+            using (MemoryStream stream = new MemoryStream())
             {
-                data.Append((byte)0x02);
-                data.Append((byte)0x09);
-                byte[] brandBytes = Encoding.ASCII.GetBytes(car.brand);
-                data.Concat(BitConverter.GetBytes((int)brandBytes.Length));
-                data.Concat(brandBytes);
-                if (car.year != 0)
+                foreach (Car car in cars.list)
                 {
-                    data.Append((byte)0x12);
-                    data.Concat(BitConverter.GetBytes(car.year));
+                    if (car.brand != null)
+                    {
+                        stream.WriteByte(0x02);
+                        byte[] brandBytes = Encoding.ASCII.GetBytes(car.brand);
+                        stream.WriteByte(0x09);
+                        stream.Write(BitConverter.GetBytes((ushort)brandBytes.Length), 0, 2);
+                        stream.Write(brandBytes, 0, brandBytes.Length);
+
+                        if (car.year != 0)
+                        {
+                            stream.WriteByte(0x12);
+                            stream.Write(BitConverter.GetBytes(car.year), 0, 2);
+                        }
+                        if (car.engineVolume != 0)
+                        {
+                            stream.WriteByte(0x13);
+                            stream.Write(BitConverter.GetBytes(car.engineVolume), 0, 4);
+                        }
+                        if (car.countDoors != 0)
+                        {
+                            stream.WriteByte(0x13);
+                            stream.Write(BitConverter.GetBytes(car.countDoors), 0, 4);
+                        }
+                    }
                 }
 
-                if (car.engineVolume != 0)
-                {
-                    data.Append((byte)0x12);
-                    data.Concat(BitConverter.GetBytes(car.engineVolume));
-                }
-                if (car.countDoors != 0)
-                {
-                    data.Append((byte)0x12);
-                    data.Concat(BitConverter.GetBytes(car.countDoors));
-                }
+                return stream.ToArray();
             }
-            return data;
-
         }
 
         public static CarList GetCarList(string fileAdress)
