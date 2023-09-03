@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace CarShowroom
 {
     [Serializable]
-    public abstract class CarList : ICarNumerable
+    public class CarList : ICarNumerable
     {
-        private List<Car> list;
+        public List<Car> list { get; private set; }
 
         public CarList(List<Car> list)
         {
@@ -33,6 +33,16 @@ namespace CarShowroom
         {
              return new CarListNumerator(this);
 
+        }
+    
+        public string toString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Car car in list)
+            {
+                sb.Append(car.toString());
+            }
+            return sb.ToString();
         }
 
 
