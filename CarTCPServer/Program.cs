@@ -24,7 +24,7 @@ namespace CarTCPServer
             var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             tcpSocket.Bind(tcpEndPoint);
             string fileAdress = @"C:\CarShowroom.json";
-            List<Car> list = GetCarList(fileAdress);
+            CarList list = GetCarList(fileAdress);
 
             tcpSocket.Listen(1);
             while (true)
@@ -52,7 +52,7 @@ namespace CarTCPServer
             }
         }
 
-        public static byte[] ConvertCarListToByte(int numRecords, List<Car> list)
+        public static byte[] ConvertCarListToByte(int numRecords, CarList list)
         {
 
             byte[] data = new byte[256];
@@ -60,7 +60,7 @@ namespace CarTCPServer
 
             if (numRecords == 0)
             {
-                foreach (Car car in list)
+                foreach (Car car in list.list)
                 {
                     data = CarToByte(car);
                 }
@@ -103,11 +103,11 @@ namespace CarTCPServer
 
         }
 
-        public static List<Car> GetCarList(string fileAdress)
+        public static CarList GetCarList(string fileAdress)
         {
 
             string jsonString = File.ReadAllText(fileAdress);
-            List<Car> list = (List<Car>)JsonConvert.DeserializeObject(jsonString);
+            CarList list = JsonConvert.DeserializeObject<CarList>(jsonString);
 
             return list;
         }

@@ -40,11 +40,6 @@ namespace CarShowroom
             }
             Console.ReadLine();
 
-            foreach(Car car in list)
-            {
-
-            }
-
         }
     }
 }

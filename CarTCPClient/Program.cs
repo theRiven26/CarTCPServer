@@ -18,7 +18,9 @@ namespace CarTCPClient
 
             var tcpEndPoint = new IPEndPoint(IPAddress.Parse(ip), port);
             var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            Console.WriteLine("Ведите сообщение");
+            Console.WriteLine("Выберите пункт: ");
+            Console.WriteLine("1. Вывести все машины.");
+            Console.WriteLine("2. Вывести по номеру.");
             var message = Console.ReadLine();
 
             var data = Encoding.UTF8.GetBytes(message);

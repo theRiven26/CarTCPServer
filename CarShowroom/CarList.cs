@@ -9,7 +9,7 @@ namespace CarShowroom
     [Serializable]
     public class CarList : ICarNumerable
     {
-        public List<Car> list { get; private set; }
+        public List<Car> list { get;  set; }
 
         public CarList(List<Car> list)
         {

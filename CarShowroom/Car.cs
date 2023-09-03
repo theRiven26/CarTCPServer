@@ -9,10 +9,10 @@ namespace CarShowroom
     [Serializable]
     public class Car
     {
-        public string brand { get;private set; }
-        public int year { get; private set; }
-        public double engineVolume { get; private set; }
-        public int countDoors { get; private set; }
+        public string brand { get; set; }
+        public int year { get;  set; }
+        public double engineVolume { get;  set; }
+        public int countDoors { get;  set; }
 
         public Car(string brand, int year, double engineVolume, int countDoors)
         {
