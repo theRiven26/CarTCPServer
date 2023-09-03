@@ -29,21 +29,57 @@ namespace CarTCPClient
 
             byte[] buffer = new byte[256];
             int dataSize = 0;
-            var answer = new StringBuilder();
+            //var answer = new StringBuilder();
 
             do
             {
                 dataSize = tcpSocket.Receive(buffer);
-                answer.Append(Encoding.UTF8.GetString(buffer,0,dataSize));
+                //answer.Append(Encoding.UTF8.GetString(buffer,0,dataSize));
             }
             while (tcpSocket.Available > 0);
-
-            Console.WriteLine(answer.ToString());
+            string answer = decodeData(buffer);
+            Console.WriteLine(answer);
             tcpSocket.Shutdown(SocketShutdown.Both);
             tcpSocket.Close();
 
             Console.ReadLine();
 
+        }
+        static string decodeData(byte[] data)
+        {
+            StringBuilder sb = new StringBuilder();
+            int index = 0;
+            while(index < data.Length)
+            {
+                if (data[index] == 0x02)
+                {
+                    int countElement = BitConverter.ToUInt16(data, ++index);
+                    index += 2;
+                }
+                if (data[index] == 0x09)
+                {
+                    int stringLenght = BitConverter.ToUInt16(data, ++index);
+                    index += 2;
+
+                    sb.Append(@"Model: " + Encoding.ASCII.GetString(data, index, stringLenght));
+                    index += stringLenght;
+                }
+                else if(data[index] == 0x12)
+                {
+                    sb.Append(BitConverter.ToUInt16(data, ++index));
+                    index += 2;
+                }
+                else if (data[index] == 0x13)
+                {
+                    sb.Append(BitConverter.ToDouble(data, ++index));
+                    index += 8;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return sb.ToString();
         }
     }
 }

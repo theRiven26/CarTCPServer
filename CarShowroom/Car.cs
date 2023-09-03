@@ -10,9 +10,9 @@ namespace CarShowroom
     public class Car
     {
         public string brand { get; set; }
-        public int year { get;  set; }
-        public double engineVolume { get;  set; }
-        public int countDoors { get;  set; }
+        public int year { get; set; }
+        public double engineVolume { get; set; }
+        public int countDoors { get; set; }
 
         public Car(string brand, int year, double engineVolume, int countDoors)
         {
@@ -22,7 +22,7 @@ namespace CarShowroom
             this.countDoors = countDoors;
         }
 
-     
+
 
         public Car(string brand, int year, double engineVolume)
         {
@@ -32,7 +32,7 @@ namespace CarShowroom
             this.countDoors = 0;
         }
 
-        public Car(string brand, int year )
+        public Car(string brand, int year)
         {
             this.brand = brand;
             this.year = year;
@@ -59,23 +59,47 @@ namespace CarShowroom
         public string toString()
         {
             StringBuilder sb = new StringBuilder();
-            if(brand != null)
+            if (brand != null)
             {
                 sb.Append(brand);
-            }
-           if(year != 0)
-            {
-                sb.Append(year);
-            }
-            if(engineVolume != 0)
-            {
-                sb.Append(engineVolume);
-            }
-            if(countDoors != 0)
-            {
-                sb.Append(countDoors);
+
+                if (year != 0)
+                {
+                    sb.Append(year);
+                }
+                if (engineVolume != 0)
+                {
+                    sb.Append(engineVolume);
+                }
+                if (countDoors != 0)
+                {
+                    sb.Append(countDoors);
+                }
             }
             return sb.ToString();
+        }
+
+        public int getLenght()
+        {
+            int lenght = 0;
+            if (brand != null)
+            {
+                lenght++;
+
+                if (year != 0)
+                {
+                    lenght++;
+                }
+                if (engineVolume != 0)
+                {
+                    lenght++;
+                }
+                if (countDoors != 0)
+                {
+                    lenght++;
+                }
+            }
+            return lenght;
         }
     }
 }

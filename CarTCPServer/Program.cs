@@ -24,7 +24,7 @@ namespace CarTCPServer
             var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             tcpSocket.Bind(tcpEndPoint);
             string fileAdress = @"C:\CarShowroom.json";
-            CarList list = GetCarList(fileAdress);
+            CarList list = getCarList(fileAdress);
 
             tcpSocket.Listen(1);
             while (true)
@@ -42,7 +42,7 @@ namespace CarTCPServer
                 string answer = data.ToString();
                 if (answer.Equals("1"))
                 {
-                    listener.Send(ConvertCarListToByte(0, list));
+                    listener.Send(convertCarListToByte(0, list));
                 }
                 
                 listener.Shutdown(SocketShutdown.Both);
@@ -50,7 +50,7 @@ namespace CarTCPServer
             }
         }
 
-        public static byte[] ConvertCarListToByte(int numRecords, CarList list)
+        public static byte[] convertCarListToByte(int numRecords, CarList list)
         {
 
             byte[] data = new byte[256];
@@ -58,19 +58,19 @@ namespace CarTCPServer
 
             if (numRecords == 0)
             {
-                    data = CarToByte(list);
+                    data = carToByte(list);
             }
             else
             {
                 List<Car> listCar = new List<Car>();
                 listCar.Add(list[numRecords]);
                 CarList carList = new CarList(listCar);
-                data = CarToByte(carList);
+                data = carToByte(carList);
             }
             return data;
         }
 
-        public static byte[] CarToByte(CarList cars)
+        public static byte[] carToByte(CarList cars)
         {
             using (MemoryStream stream = new MemoryStream())
             {
@@ -79,9 +79,10 @@ namespace CarTCPServer
                     if (car.brand != null)
                     {
                         stream.WriteByte(0x02);
-                        byte[] brandBytes = Encoding.ASCII.GetBytes(car.brand);
+                        stream.Write(BitConverter.GetBytes(car.getLenght()), 0, 2);
                         stream.WriteByte(0x09);
-                        stream.Write(BitConverter.GetBytes((ushort)brandBytes.Length), 0, 2);
+                        byte[] brandBytes = Encoding.ASCII.GetBytes(car.brand);
+                        stream.Write(BitConverter.GetBytes(brandBytes.Length), 0, 2);
                         stream.Write(brandBytes, 0, brandBytes.Length);
 
                         if (car.year != 0)
@@ -92,12 +93,12 @@ namespace CarTCPServer
                         if (car.engineVolume != 0)
                         {
                             stream.WriteByte(0x13);
-                            stream.Write(BitConverter.GetBytes(car.engineVolume), 0, 4);
+                            stream.Write(BitConverter.GetBytes(car.engineVolume), 0, 8);
                         }
                         if (car.countDoors != 0)
                         {
-                            stream.WriteByte(0x13);
-                            stream.Write(BitConverter.GetBytes(car.countDoors), 0, 4);
+                            stream.WriteByte(0x12);
+                            stream.Write(BitConverter.GetBytes(car.countDoors), 0, 2);
                         }
                     }
                 }
@@ -106,7 +107,7 @@ namespace CarTCPServer
             }
         }
 
-        public static CarList GetCarList(string fileAdress)
+        public static CarList getCarList(string fileAdress)
         {
 
             string jsonString = File.ReadAllText(fileAdress);
