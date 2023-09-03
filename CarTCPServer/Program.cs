@@ -32,17 +32,28 @@ namespace CarTCPServer
                 var listener = tcpSocket.Accept();
                 byte[] buffer = new byte[256];
                 int dataSize = 0;
-                var data = new StringBuilder();
+                int answer = 0;
                 do
                 {
                     dataSize = listener.Receive(buffer);
-                    data.Append(Encoding.UTF8.GetString(buffer, 0, dataSize));
+                    answer = BitConverter.ToInt16(buffer, 0);
                 }
                 while (listener.Available > 0);
-                string answer = data.ToString();
-                if (answer.Equals("1"))
+                if (answer == 1)
                 {
                     listener.Send(convertCarListToByte(0, list));
+                }else if(answer > 20)
+                {
+                    int numRecords = answer - 20;
+                    if(list.Count > numRecords)
+                    {
+                        listener.Send(convertCarListToByte(numRecords, list));
+                    }
+                    else
+                    {
+                        byte[] bt = new byte[256];
+                        listener.Send(Encoding.ASCII.GetBytes("Под этим номером машины не существует"));
+                    }
                 }
                 
                 listener.Shutdown(SocketShutdown.Both);
@@ -61,9 +72,9 @@ namespace CarTCPServer
                     data = carToByte(list);
             }
             else
-            {
+            { 
                 List<Car> listCar = new List<Car>();
-                listCar.Add(list[numRecords]);
+                listCar.Add(list[numRecords - 1]);
                 CarList carList = new CarList(listCar);
                 data = carToByte(carList);
             }
